@@ -49,12 +49,11 @@ export class ApplicationsController {
   ) {
     const parsedLimit = limit ? parseInt(limit, 10) : undefined;
     const parsedOffset = offset ? parseInt(offset, 10) : undefined;
-    console.log({ parsedLimit, parsedOffset });
+
     const result = await this.applicationsService.findAll(
       parsedLimit,
       parsedOffset,
     );
-    console.log('findAll result:', result);
     return result;
   }
 

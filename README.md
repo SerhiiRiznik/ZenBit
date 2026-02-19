@@ -35,20 +35,27 @@ npm install
 
 ```env
 PORT=3001
+DB_SSL=true
+DB_SYNCHRONIZE=true
+JWT_SECRET=change-me-secret
+JWT_EXPIRES_IN=1d
+JWT_REFRESH_SECRET=change-me-refresh-secret
+JWT_REFRESH_EXPIRES_IN=7d
 FRONTEND_URL=http://localhost:5173
-
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=zenbit
-
-DB_SSL=false
-DB_MIGRATIONS_RUN=false
-
-JWT_SECRET=dev-secret
-JWT_REFRESH_SECRET=dev-refresh-secret
 COOKIE_SECURE=false
+
+POSTGRES_HOST=aws-1-eu-west-1.pooler.supabase.com
+POSTGRES_PORT=6543
+POSTGRES_USER=postgres.evgcaevbkzlhbngfirpa
+POSTGRES_PASSWORD=r&P54h6bi_W%Lb.
+POSTGRES_DB=postgres
+
+AWS_REGION=eu-north-1
+AWS_S3_BUCKET=gen-zenbit
+AWS_S3_PUBLIC_BASE_URL=https://gen-zenbit.s3.eu-north-1.amazonaws.com
+AWS_S3_ENDPOINT=
+AWS_ACCESS_KEY_ID=AKIAYETYZ4P3X2S2JCTS
+AWS_SECRET_ACCESS_KEY=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
 ```
 
 3. Start backend:
@@ -97,6 +104,80 @@ Frontend runs on `http://localhost:5173`.
 - `GET /deals`
 - `GET /deals/get`
 - `GET /deals/get/:id`
+
+## API Routes (Backend)
+
+### /auth
+
+- **POST /auth/register**
+  - Body: `{ email, password, ... }` (CreateUserDto)
+  - Response: `{ accessToken, user }` + sets refreshToken cookie
+
+- **POST /auth/login**
+  - Body: `{ email, password }` (LoginDto)
+  - Response: `{ accessToken, user }` + sets refreshToken cookie
+
+- **POST /auth/refresh**
+  - Cookies: `refreshToken`
+  - Response: `{ accessToken }` + updates refreshToken cookie
+  - 401 if refreshToken is missing
+
+- **POST /auth/logout**
+  - Clears refreshToken cookie
+  - Response: `{ success: true }`
+
+- **GET /auth/me**
+  - JWT authorization required
+  - Response: `{ userId, email }`
+
+### /users
+
+- **POST /users**
+  - Body: `{ email, password, ... }` (CreateUserDto)
+  - Response: `{ id, createdAt }`
+
+- **GET /users**
+  - Response: array of users
+
+### /applications
+
+- **POST /applications**
+  - Body: Application DTO + file (image, optional)
+  - Response: created application
+
+- **GET /applications**
+  - Query: `limit`, `offset` (optional)
+  - Response: array of applications
+
+- **GET /applications/currencies**
+  - Response: array of currencies
+
+- **GET /applications/:id**
+  - Param: `id`
+  - Response: application
+
+- **PATCH /applications/:id**
+  - Param: `id`
+  - Body: Application DTO + file (image, optional)
+  - Response: updated application
+
+- **DELETE /applications/:id**
+  - Param: `id`
+  - Response: delete result
+
+- **GET /applications/:id/investments**
+  - Param: `id`
+  - Response: array of investments
+
+- **POST /applications/:id/investments**
+  - Param: `id`
+  - Body: Investment DTO
+  - Response: created investment
+
+- **PATCH /applications/:applicationId/investments/:investmentId**
+  - Param: `applicationId`, `investmentId`
+  - Body: Investment DTO
+  - Response: updated investment
 
 ## Scripts
 
